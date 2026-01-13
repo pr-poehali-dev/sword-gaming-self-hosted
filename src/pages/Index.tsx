@@ -232,16 +232,124 @@ const Index = () => {
 
         {activeSection === 'forum' && (
           <div className="container mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto py-20">
-              <Icon name="MessageSquare" size={64} className="mx-auto mb-6 text-primary" />
-              <h2 className="text-4xl font-gaming font-bold glow-cyan mb-4">ФОРУМ</h2>
-              <p className="text-muted-foreground text-lg mb-8">
-                Раздел форума находится в разработке. Скоро здесь появится возможность общаться с другими игроками!
-              </p>
-              <Button className="bg-gradient-to-r from-primary to-secondary border-glow">
-                <Icon name="Bell" size={18} className="mr-2" />
-                Уведомить о запуске
-              </Button>
+            <div className="text-center mb-12">
+              <h2 className="text-5xl font-gaming font-bold glow-cyan mb-4">ПРАВИЛА СЕРВЕРА</h2>
+              <p className="text-muted-foreground text-lg">Обязательны к прочтению для всех игроков</p>
+            </div>
+            
+            <div className="max-w-4xl mx-auto space-y-8">
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                    <Icon name="ShieldAlert" className="text-accent" size={28} />
+                  </div>
+                  <h3 className="text-3xl font-gaming font-bold text-accent glow-purple">ОБЩИЕ ПРАВИЛА СЕРВЕРА</h3>
+                </div>
+                <div className="space-y-4 text-foreground/90">
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">1.</span>
+                    <p>Запрещён флуд/спам. <span className="text-muted-foreground">(Мут/гаг | При повторном бан 10 мин.)</span></p>
+                  </div>
+                  <div className="flex gap-3 pl-8">
+                    <span className="font-gaming font-bold text-primary/70 min-w-[2rem]">1.1.</span>
+                    <p>Запрещено обходить индивидуальный мут\гаг. Мут будет действовать до конца карты. <span className="text-muted-foreground">(При повторном нарушении/обход мута любыми способами бан на 10 мин.)</span></p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">2.</span>
+                    <p>Запрещено оскорблять игроков. <span className="text-muted-foreground">(Первый кик | При повторном нарушении бан на 10-30 мин.)</span></p>
+                  </div>
+                  <div className="flex gap-3 pl-8">
+                    <span className="font-gaming font-bold text-primary/70 min-w-[2rem]">2.1.</span>
+                    <p>Дружеское оскорбление, шуточное общение, когда тот кого оскорбили, не высказал претензии, не несет за собой оскорбительный характер.</p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">3.</span>
+                    <p>Запрещена реклама в любом виде. <span className="text-muted-foreground">(Бан навсегда/лишение привилегий.)</span></p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">4.</span>
+                    <p>Запрещены спреи (лого) с "порнографией", оскорблением игроков, свастика в любом виде. <span className="text-muted-foreground">(Карается киком | При повторном бан 10 мин.)</span></p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">5.</span>
+                    <p>Запрещено упоминание родных в любой форме. <span className="text-muted-foreground">(Бан навсегда/лишение привилегий.)</span></p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">6.</span>
+                    <p>Запрещены ники с оскорблениями. <span className="text-muted-foreground">(Переименование | При повторном Бан на 10 минут).</span></p>
+                  </div>
+                  <div className="flex gap-3">
+                    <span className="font-gaming font-bold text-primary min-w-[2rem]">7.</span>
+                    <p>Разрешено употребление ненормативной лексики в пределах разумного и без цели оскорбления. <span className="text-muted-foreground">(Мут/гаг | При повторном бан 10 мин.)</span></p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center">
+                    <Icon name="Shield" className="text-secondary" size={28} />
+                  </div>
+                  <h3 className="text-3xl font-gaming font-bold text-secondary glow-purple">ПРАВИЛА ДЛЯ АДМИНИСТРАТОРОВ</h3>
+                </div>
+                <div className="mb-6 p-4 bg-muted/30 rounded-lg border border-border/50">
+                  <p className="text-foreground/90">
+                    <span className="font-gaming font-bold text-secondary">Администратор</span> — игрок с расширенными возможностями на сервере (голосования, смена карты, кик, бан).
+                  </p>
+                </div>
+                <h4 className="text-xl font-gaming font-bold mb-4 text-accent">Администраторские права снимаются за:</h4>
+                <div className="space-y-3 text-foreground/90">
+                  {[
+                    'Решение главных администраторов/доверенных лиц',
+                    'Многочисленные жалобы от других игроков',
+                    'Нарушение или несоблюдение правил',
+                    'Передачу админки третьим лицам',
+                    'Рекламу своих или иных проектов',
+                    'Посторонние/вредоносные ссылки в чате',
+                    'Несообщение контактов главных администраторов заинтересованным игрокам',
+                    'Действия, направленные на уменьшение числа игроков',
+                    'Использование админки в личных целях',
+                    'Выдачу HP/воскрешение/бессмертие/скорость (кроме разрешенных случаев)',
+                    'Выдачу себя за главного администратора',
+                    'Оскорбление/упоминание родителей в грубой форме',
+                    'Использование привилегий для попадания за пределы карты',
+                    'Действия, повлекшие аварийный перезапуск сервера',
+                    'Шлепки игроков с дамагом, поджигание'
+                  ].map((rule, idx) => (
+                    <div key={idx} className="flex gap-3">
+                      <span className="font-gaming font-bold text-secondary min-w-[2rem]">{idx + 1}.</span>
+                      <p>{rule}</p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow bg-gradient-to-br from-primary/5 to-accent/5">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                    <Icon name="AlertCircle" className="text-primary" size={28} />
+                  </div>
+                  <h3 className="text-3xl font-gaming font-bold text-primary glow-cyan">ЖАЛОБЫ НА ИГРОКОВ</h3>
+                </div>
+                <p className="text-lg mb-6 text-foreground/90">
+                  Жалобы на игроков с привилегиями принимаем <span className="font-gaming font-bold text-primary">только в Telegram канале!</span>
+                </p>
+                <div className="flex justify-center">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow">
+                    <Icon name="Send" size={20} className="mr-2" />
+                    Подать жалобу в Telegram
+                  </Button>
+                </div>
+              </Card>
+
+              <div className="text-center py-8">
+                <div className="inline-flex items-center gap-3 px-6 py-3 bg-muted/30 rounded-lg border border-border/50">
+                  <Icon name="Info" className="text-primary" size={24} />
+                  <p className="text-muted-foreground">
+                    Незнание правил не освобождает от ответственности
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}
