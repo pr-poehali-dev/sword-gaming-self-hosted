@@ -1,0 +1,15 @@
+{
+  "tests": [
+    {
+      "name": "Test server monitor endpoint",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "online": "string",
+        "status": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,6 +6,12 @@ import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [onlinePlayers, setOnlinePlayers] = useState('0');
+  const [registeredUsers, setRegisteredUsers] = useState('0');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [selectedPrivilege, setSelectedPrivilege] = useState<any>(null);
 
   const navItems = [
     { id: 'home', label: 'Главная', icon: 'Home' },
@@ -16,16 +22,38 @@ const Index = () => {
     { id: 'contacts', label: 'Контакты', icon: 'Mail' },
   ];
 
+  useEffect(() => {
+    const storedUsers = localStorage.getItem('registeredUsers');
+    if (storedUsers) {
+      setRegisteredUsers(storedUsers);
+    }
+
+    const fetchServerStatus = async () => {
+      try {
+        const response = await fetch('https://functions.poehali.dev/9e9c3f3b-b5ad-4a03-8dc2-7724325a988e');
+        const data = await response.json();
+        if (data.online) {
+          setOnlinePlayers(data.online);
+        }
+      } catch (error) {
+        console.error('Ошибка получения статуса сервера:', error);
+      }
+    };
+
+    fetchServerStatus();
+    const interval = setInterval(fetchServerStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const stats = [
-    { label: 'Игроков онлайн', value: '1,247', icon: 'Users' },
-    { label: 'Серверов', value: '12', icon: 'Server' },
-    { label: 'Зарегистрировано', value: '45,892', icon: 'UserPlus' },
+    { label: 'Игроков онлайн', value: onlinePlayers, icon: 'Users' },
+    { label: 'Серверов', value: '1', icon: 'Server' },
+    { label: 'Зарегистрировано', value: registeredUsers, icon: 'UserPlus' },
   ];
 
   const shopItems = [
-    { name: 'VIP статус', price: '499₽', description: 'Доступ к VIP возможностям на 30 дней', popular: true },
-    { name: 'Premium набор', price: '999₽', description: 'Эксклюзивные предметы и бонусы', popular: false },
-    { name: 'Starter Pack', price: '199₽', description: 'Стартовый набор для новичков', popular: false },
+    { name: 'VIP статус', price: '350₽', description: 'Доступ к VIP возможностям на 30 дней', popular: true },
+    { name: 'ADMIN', price: '550₽', description: 'Полный доступ к администраторским функциям', popular: false },
   ];
 
   const topPlayers = [
@@ -37,9 +65,7 @@ const Index = () => {
   ];
 
   const servers = [
-    { name: 'Основной #1', players: '247/300', ping: '15ms', status: 'online' },
-    { name: 'PvP Arena #2', players: '189/250', ping: '22ms', status: 'online' },
-    { name: 'Roleplay #3', players: '156/200', ping: '18ms', status: 'online' },
+    { name: '[Горизонт Сисек] 21+', players: onlinePlayers + '/32', ping: '15ms', status: 'online', ip: '46.174.50.10:27208' },
   ];
 
   return (
@@ -51,7 +77,7 @@ const Index = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center animate-pulse-glow">
                 <Icon name="Gamepad2" className="text-background" size={24} />
               </div>
-              <h1 className="text-2xl font-gaming font-bold glow-cyan">SWORD GAMING</h1>
+              <h1 className="text-2xl font-gaming font-bold glow-cyan">[Горизонт Сисек] 21+</h1>
             </div>
             
             <div className="hidden md:flex items-center gap-6">
@@ -71,10 +97,16 @@ const Index = () => {
               ))}
             </div>
 
-            <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 border-glow">
-              <Icon name="User" size={18} className="mr-2" />
-              Войти
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" className="border-primary/50 hover:border-glow" onClick={() => setShowLoginModal(true)}>
+                <Icon name="LogIn" size={18} className="mr-2" />
+                Войти
+              </Button>
+              <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 border-glow" onClick={() => setShowRegisterModal(true)}>
+                <Icon name="UserPlus" size={18} className="mr-2" />
+                Регистрация
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -92,11 +124,11 @@ const Index = () => {
                   Присоединяйся к лучшему игровому сообществу. Создай свою легенду уже сегодня!
                 </p>
                 <div className="flex gap-4 justify-center pt-4">
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow" onClick={() => setActiveSection('connect')}>
                     <Icon name="Play" size={20} className="mr-2" />
                     Начать играть
                   </Button>
-                  <Button size="lg" variant="outline" className="text-lg font-gaming border-primary/50 hover:border-glow">
+                  <Button size="lg" variant="outline" className="text-lg font-gaming border-primary/50 hover:border-glow" onClick={() => setActiveSection('about')}>
                     <Icon name="Info" size={20} className="mr-2" />
                     Подробнее
                   </Button>
@@ -128,21 +160,33 @@ const Index = () => {
               <h2 className="text-5xl font-gaming font-bold glow-purple mb-4">МАГАЗИН</h2>
               <p className="text-muted-foreground text-lg">Прокачай свой аккаунт до максимума</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {shopItems.map((item, idx) => (
-                <Card key={idx} className="p-6 bg-card/50 backdrop-blur border-border/50 hover:border-primary/50 transition-all card-glow relative overflow-hidden">
+                <Card key={idx} className="p-8 bg-card/50 backdrop-blur border-border/50 hover:border-primary/50 transition-all card-glow relative overflow-hidden">
                   {item.popular && (
                     <Badge className="absolute top-4 right-4 bg-secondary text-secondary-foreground">
                       Популярно
                     </Badge>
                   )}
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-gaming font-bold">{item.name}</h3>
-                    <p className="text-muted-foreground">{item.description}</p>
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center">
+                        <Icon name={item.name === 'VIP статус' ? 'Crown' : 'ShieldCheck'} className="text-primary" size={32} />
+                      </div>
+                      <h3 className="text-3xl font-gaming font-bold">{item.name}</h3>
+                    </div>
+                    <p className="text-muted-foreground text-lg">{item.description}</p>
                     <div className="flex items-center justify-between pt-4">
-                      <span className="text-3xl font-gaming font-bold text-primary glow-cyan">{item.price}</span>
-                      <Button className="bg-gradient-to-r from-primary to-secondary border-glow">
-                        <Icon name="ShoppingCart" size={18} className="mr-2" />
+                      <span className="text-4xl font-gaming font-bold text-primary glow-cyan">{item.price}</span>
+                      <Button 
+                        size="lg" 
+                        className="bg-gradient-to-r from-primary to-secondary border-glow"
+                        onClick={() => {
+                          setSelectedPrivilege(item);
+                          setShowPurchaseModal(true);
+                        }}
+                      >
+                        <Icon name="ShoppingCart" size={20} className="mr-2" />
                         Купить
                       </Button>
                     </div>
@@ -362,25 +406,123 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-5xl font-gaming font-bold glow-cyan mb-4">КОНТАКТЫ</h2>
-              <p className="text-muted-foreground text-lg">Свяжись с нами любым удобным способом</p>
+              <p className="text-muted-foreground text-lg">Свяжись с нами в Telegram</p>
             </div>
-            <div className="max-w-2xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6 bg-card/50 backdrop-blur border-border/50 hover:border-primary/50 transition-all card-glow text-center">
-                <Icon name="Send" size={40} className="mx-auto mb-4 text-primary" />
-                <h3 className="text-xl font-gaming font-bold mb-2">Telegram</h3>
-                <p className="text-muted-foreground mb-4">@sword_gaming_support</p>
-                <Button variant="outline" className="border-primary/50 hover:border-glow">
-                  Написать
+            <div className="max-w-md mx-auto">
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 hover:border-primary/50 transition-all card-glow text-center">
+                <Icon name="Send" size={64} className="mx-auto mb-6 text-primary" />
+                <h3 className="text-2xl font-gaming font-bold mb-3">Telegram</h3>
+                <p className="text-muted-foreground mb-6 text-lg">t.me/Gorizont_sisek</p>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-primary to-secondary border-glow w-full"
+                  onClick={() => window.open('https://t.me/Gorizont_sisek', '_blank')}
+                >
+                  <Icon name="Send" size={20} className="mr-2" />
+                  Перейти в Telegram
                 </Button>
               </Card>
-              <Card className="p-6 bg-card/50 backdrop-blur border-border/50 hover:border-primary/50 transition-all card-glow text-center">
-                <Icon name="AtSign" size={40} className="mx-auto mb-4 text-secondary" />
-                <h3 className="text-xl font-gaming font-bold mb-2">Discord</h3>
-                <p className="text-muted-foreground mb-4">discord.gg/sword-gaming</p>
-                <Button variant="outline" className="border-secondary/50 hover:border-glow">
-                  Присоединиться
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'connect' && (
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-5xl font-gaming font-bold glow-cyan mb-4">ПОДКЛЮЧЕНИЕ К СЕРВЕРУ</h2>
+              <p className="text-muted-foreground text-lg">Скопируй IP и подключайся</p>
+            </div>
+            <div className="max-w-2xl mx-auto">
+              <Card className="p-10 bg-card/50 backdrop-blur border-border/50 card-glow text-center">
+                <div className="mb-8">
+                  <Icon name="Server" size={80} className="mx-auto mb-6 text-primary animate-pulse-glow" />
+                  <h3 className="text-3xl font-gaming font-bold mb-4 glow-cyan">[Горизонт Сисек] 21+</h3>
+                </div>
+                <div className="bg-muted/30 rounded-lg p-6 border border-primary/30 mb-6">
+                  <p className="text-sm text-muted-foreground mb-2">IP адрес сервера:</p>
+                  <p className="text-4xl font-gaming font-bold text-primary glow-cyan">46.174.50.10:27208</p>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow w-full"
+                  onClick={() => {
+                    navigator.clipboard.writeText('46.174.50.10:27208');
+                  }}
+                >
+                  <Icon name="Copy" size={20} className="mr-2" />
+                  Скопировать IP
                 </Button>
+                <p className="text-muted-foreground mt-6">Открой Counter-Strike → Найти серверы → Добавить сервер</p>
               </Card>
+            </div>
+          </div>
+        )}
+
+        {activeSection === 'about' && (
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-5xl font-gaming font-bold glow-purple mb-4">О СЕРВЕРЕ</h2>
+              <p className="text-muted-foreground text-lg">Почему именно мы?</p>
+            </div>
+            <div className="max-w-4xl mx-auto space-y-6">
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Zap" className="text-primary" size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-gaming font-bold mb-3 text-primary">Стабильность и производительность</h3>
+                    <p className="text-foreground/90 text-lg">Мощный сервер с круглосуточной поддержкой обеспечивает бесперебойную игру без лагов и вылетов. Низкий пинг и высокая стабильность соединения.</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Users" className="text-secondary" size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-gaming font-bold mb-3 text-secondary">Дружное сообщество</h3>
+                    <p className="text-foreground/90 text-lg">Активное игровое сообщество с адекватными игроками. Регулярные турниры, ивенты и конкурсы с призами. Присоединяйся к нашему Telegram-каналу!</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 bg-accent/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Shield" className="text-accent" size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-gaming font-bold mb-3 text-accent">Честная игра</h3>
+                    <p className="text-foreground/90 text-lg">Строгие правила против читеров и нарушителей. Активная администрация следит за порядком 24/7. Система античита защищает от недобросовестных игроков.</p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-8 bg-card/50 backdrop-blur border-border/50 card-glow bg-gradient-to-br from-primary/5 to-secondary/5">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon name="Star" className="text-primary" size={32} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-gaming font-bold mb-3 text-primary">Уникальные возможности</h3>
+                    <p className="text-foreground/90 text-lg">Эксклюзивные VIP и Admin привилегии, доступные карты и моды. Создай свою легенду на нашем сервере уже сегодня!</p>
+                  </div>
+                </div>
+              </Card>
+
+              <div className="text-center pt-6">
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-primary to-secondary text-xl font-gaming border-glow"
+                  onClick={() => setActiveSection('connect')}
+                >
+                  <Icon name="Play" size={24} className="mr-2" />
+                  Начать играть сейчас
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -390,11 +532,161 @@ const Index = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Icon name="Gamepad2" className="text-primary" size={24} />
-            <span className="text-xl font-gaming font-bold glow-cyan">SWORD GAMING</span>
+            <span className="text-xl font-gaming font-bold glow-cyan">[Горизонт Сисек] 21+</span>
           </div>
-          <p className="text-muted-foreground">© 2024 Sword Gaming. Все права защищены.</p>
+          <p className="text-muted-foreground">© 2024 Горизонт Сисек. Все права защищены.</p>
         </div>
       </footer>
+
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowLoginModal(false)}>
+          <Card className="p-8 bg-card border-primary/50 max-w-md w-full card-glow" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-gaming font-bold text-primary glow-cyan">ВХОД</h3>
+              <button onClick={() => setShowLoginModal(false)} className="text-muted-foreground hover:text-foreground">
+                <Icon name="X" size={24} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">STEAM ID</label>
+                <input 
+                  type="text" 
+                  placeholder="STEAM_0:0:12345678" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Пароль</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+              <Button className="w-full bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow mt-6">
+                <Icon name="LogIn" size={20} className="mr-2" />
+                Войти
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {showRegisterModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowRegisterModal(false)}>
+          <Card className="p-8 bg-card border-primary/50 max-w-md w-full card-glow" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-gaming font-bold text-primary glow-cyan">РЕГИСТРАЦИЯ</h3>
+              <button onClick={() => setShowRegisterModal(false)} className="text-muted-foreground hover:text-foreground">
+                <Icon name="X" size={24} />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">STEAM ID</label>
+                <input 
+                  type="text" 
+                  placeholder="STEAM_0:0:12345678" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Пароль</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Подтвердите пароль</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+              <Button 
+                className="w-full bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow mt-6"
+                onClick={() => {
+                  const currentCount = parseInt(localStorage.getItem('registeredUsers') || '0');
+                  const newCount = currentCount + 1;
+                  localStorage.setItem('registeredUsers', newCount.toString());
+                  setRegisteredUsers(newCount.toString());
+                  setShowRegisterModal(false);
+                }}
+              >
+                <Icon name="UserPlus" size={20} className="mr-2" />
+                Зарегистрироваться
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {showPurchaseModal && selectedPrivilege && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPurchaseModal(false)}>
+          <Card className="p-8 bg-card border-primary/50 max-w-lg w-full card-glow" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-gaming font-bold text-primary glow-cyan">ПОКУПКА {selectedPrivilege.name.toUpperCase()}</h3>
+              <button onClick={() => setShowPurchaseModal(false)} className="text-muted-foreground hover:text-foreground">
+                <Icon name="X" size={24} />
+              </button>
+            </div>
+            
+            <div className="mb-6 p-6 bg-muted/30 rounded-lg border border-border/50">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-muted-foreground">Привилегия:</span>
+                <span className="font-gaming font-bold text-lg">{selectedPrivilege.name}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Цена:</span>
+                <span className="font-gaming font-bold text-2xl text-primary glow-cyan">{selectedPrivilege.price}</span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Выберите сервер</label>
+                <select className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none">
+                  <option>[Горизонт Сисек] 21+ - 46.174.50.10:27208</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Способ привязки</label>
+                <select className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none">
+                  <option>STEAM ID + Пароль</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">STEAM ID</label>
+                <input 
+                  type="text" 
+                  placeholder="STEAM_0:0:12345678" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Пароль</label>
+                <input 
+                  type="password" 
+                  placeholder="••••••••" 
+                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                />
+              </div>
+
+              <Button className="w-full bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow mt-6">
+                <Icon name="ShoppingCart" size={20} className="mr-2" />
+                Оплатить {selectedPrivilege.price}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
