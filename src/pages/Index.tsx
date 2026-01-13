@@ -335,7 +335,11 @@ const Index = () => {
                   Жалобы на игроков с привилегиями принимаем <span className="font-gaming font-bold text-primary">только в Telegram канале!</span>
                 </p>
                 <div className="flex justify-center">
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow">
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow"
+                    onClick={() => window.open('https://t.me/Gorizont_sisek/114', '_blank')}
+                  >
                     <Icon name="Send" size={20} className="mr-2" />
                     Подать жалобу в Telegram
                   </Button>
