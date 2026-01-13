@@ -52,8 +52,85 @@ const Index = () => {
   ];
 
   const shopItems = [
-    { name: 'VIP статус', price: '350₽', description: 'Доступ к VIP возможностям на 30 дней', popular: true },
-    { name: 'ADMIN', price: '550₽', description: 'Полный доступ к администраторским функциям', popular: false },
+    { 
+      name: 'VIP статус', 
+      price: '350₽', 
+      description: 'Доступ к VIP возможностям на 30 дней', 
+      popular: true,
+      features: [
+        {
+          title: 'Боевое превосходство',
+          items: [
+            'Пониженный получаемый урон (-15%) и повышенный наносимый (+15%)',
+            'Вампиризм (10%) — лечение за счет нанесенного урона',
+            'Аптечка — разовая мощная подпитка',
+            'Нет урона от мира / себя'
+          ]
+        },
+        {
+          title: 'Тактический комфорт',
+          items: [
+            'Автоглушитель (на M4A1, USP)',
+            'Лечение союзников (30%)',
+            'Выносливость и регенерация брони',
+            'Быстрая посадка бомбы'
+          ]
+        },
+        {
+          title: 'Персонализация',
+          items: [
+            'Выбор скина и эффектов',
+            'Автозакупка оружия',
+            'Растворение тела после убийства'
+          ]
+        }
+      ]
+    },
+    { 
+      name: 'ADMIN', 
+      price: '550₽', 
+      description: 'Полный доступ к администраторским функциям', 
+      popular: false,
+      features: [
+        {
+          title: 'Управление игроками',
+          items: [
+            'Бан по нику/SteamID — полное исключение',
+            'Кик — мгновенное выгоняние с сервера',
+            'Мут/Гаг — лишение чата и голоса',
+            'Слей (убийство) — мгновенное наказание',
+            'Телепорт к игроку / игрока к себе',
+            'Выдать оружие, ХП, броню'
+          ]
+        },
+        {
+          title: 'Управление сервером',
+          items: [
+            'Смена карты немедленно или в конце раунда',
+            'Изменение гравитации, скорости, денег',
+            'Исполнение RCON-команд',
+            'Перезагрузка настроек и плагинов'
+          ]
+        },
+        {
+          title: 'Управление голосованиями',
+          items: [
+            'Принудительный запуск голосования',
+            'Отмена текущего голосования',
+            'Настройка времени голосования'
+          ]
+        },
+        {
+          title: 'Бан по IP и запрет оружия',
+          items: [
+            'Добавление IP в бан-лист',
+            'Просмотр и удаление IP из бана',
+            'Запрет оружия (AWP, автоматы, гранаты)',
+            'Наказание за использование'
+          ]
+        }
+      ]
+    },
   ];
 
   const topPlayers = [
@@ -262,7 +339,7 @@ const Index = () => {
                         <Icon name="Circle" size={8} className="mr-1 fill-current" />
                         Онлайн
                       </Badge>
-                      <Button className="bg-gradient-to-r from-primary to-secondary border-glow">
+                      <Button className="bg-gradient-to-r from-primary to-secondary border-glow" onClick={() => setActiveSection('connect')}>
                         <Icon name="Play" size={18} className="mr-2" />
                         Играть
                       </Button>
@@ -549,10 +626,10 @@ const Index = () => {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">STEAM ID</label>
+                <label className="block text-sm font-medium mb-2">Никнейм</label>
                 <input 
                   type="text" 
-                  placeholder="STEAM_0:0:12345678" 
+                  placeholder="Ваш ник" 
                   className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
                 />
               </div>
@@ -584,10 +661,10 @@ const Index = () => {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">STEAM ID</label>
+                <label className="block text-sm font-medium mb-2">Никнейм</label>
                 <input 
                   type="text" 
-                  placeholder="STEAM_0:0:12345678" 
+                  placeholder="Ваш ник" 
                   className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
                 />
               </div>
@@ -626,65 +703,88 @@ const Index = () => {
       )}
 
       {showPurchaseModal && selectedPrivilege && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPurchaseModal(false)}>
-          <Card className="p-8 bg-card border-primary/50 max-w-lg w-full card-glow" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-gaming font-bold text-primary glow-cyan">ПОКУПКА {selectedPrivilege.name.toUpperCase()}</h3>
-              <button onClick={() => setShowPurchaseModal(false)} className="text-muted-foreground hover:text-foreground">
-                <Icon name="X" size={24} />
-              </button>
-            </div>
-            
-            <div className="mb-6 p-6 bg-muted/30 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-muted-foreground">Привилегия:</span>
-                <span className="font-gaming font-bold text-lg">{selectedPrivilege.name}</span>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setShowPurchaseModal(false)}>
+          <div className="max-w-6xl w-full my-8" onClick={(e) => e.stopPropagation()}>
+            <Card className="p-8 bg-card border-primary/50 card-glow">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-2xl font-gaming font-bold text-primary glow-cyan">ПОКУПКА {selectedPrivilege.name.toUpperCase()}</h3>
+                <button onClick={() => setShowPurchaseModal(false)} className="text-muted-foreground hover:text-foreground">
+                  <Icon name="X" size={24} />
+                </button>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Цена:</span>
-                <span className="font-gaming font-bold text-2xl text-primary glow-cyan">{selectedPrivilege.price}</span>
-              </div>
-            </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div className="p-6 bg-muted/30 rounded-lg border border-border/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-muted-foreground">Привилегия:</span>
+                      <span className="font-gaming font-bold text-lg">{selectedPrivilege.name}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Цена:</span>
+                      <span className="font-gaming font-bold text-2xl text-primary glow-cyan">{selectedPrivilege.price}</span>
+                    </div>
+                  </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Выберите сервер</label>
-                <select className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none">
-                  <option>[Горизонт Сисек] 21+ - 46.174.50.10:27208</option>
-                </select>
-              </div>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Выберите сервер</label>
+                      <select className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none">
+                        <option>[Горизонт Сисек] 21+ - 46.174.50.10:27208</option>
+                      </select>
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Способ привязки</label>
-                <select className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none">
-                  <option>STEAM ID + Пароль</option>
-                </select>
-              </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Способ привязки</label>
+                      <select className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none">
+                        <option>STEAM ID + Пароль</option>
+                      </select>
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">STEAM ID</label>
-                <input 
-                  type="text" 
-                  placeholder="STEAM_0:0:12345678" 
-                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
-                />
-              </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">STEAM ID</label>
+                      <input 
+                        type="text" 
+                        placeholder="STEAM_0:0:12345678" 
+                        className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                      />
+                    </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">Пароль</label>
-                <input 
-                  type="password" 
-                  placeholder="••••••••" 
-                  className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
-                />
-              </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Пароль</label>
+                      <input 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="w-full bg-muted/50 border border-border rounded-lg px-4 py-3 focus:border-primary/50 focus:outline-none"
+                      />
+                    </div>
 
-              <Button className="w-full bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow mt-6">
-                <Icon name="ShoppingCart" size={20} className="mr-2" />
-                Оплатить {selectedPrivilege.price}
-              </Button>
-            </div>
-          </Card>
+                    <Button className="w-full bg-gradient-to-r from-primary to-secondary text-lg font-gaming border-glow mt-6">
+                      <Icon name="ShoppingCart" size={20} className="mr-2" />
+                      Оплатить {selectedPrivilege.price}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                  <h4 className="text-xl font-gaming font-bold text-secondary mb-4">Что входит в {selectedPrivilege.name}:</h4>
+                  {selectedPrivilege.features.map((feature: any, idx: number) => (
+                    <Card key={idx} className="p-5 bg-muted/20 border-border/50">
+                      <h5 className="font-gaming font-bold text-lg mb-3 text-primary">{feature.title}</h5>
+                      <ul className="space-y-2">
+                        {feature.items.map((item: string, itemIdx: number) => (
+                          <li key={itemIdx} className="flex gap-2 text-sm text-foreground/90">
+                            <Icon name="Check" size={16} className="text-primary flex-shrink-0 mt-0.5" />
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       )}
     </div>
